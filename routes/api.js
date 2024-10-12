@@ -14,13 +14,16 @@ module.exports = function (app) {
   app.route('/api/solve')
     .post((req, res) => {
        let puzzle = req.body.puzzle;
-    let result =  solver.validate(puzzle);
-    if (result != "valid") { 
-    res.send(result);
+    let validation =  solver.validate(puzzle);
+    if (validation != "valid") { 
+    res.send(validation);
     return
     } else { 
-    res.send({error: result});
-    console. log(result )
+    res.send({error: validation});
+    console. log(validation )
+    }
+    if (validation === "valid") {
+      solver.solve(puzzle)
     }
     });
 };
