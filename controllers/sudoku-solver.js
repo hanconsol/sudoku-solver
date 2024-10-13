@@ -33,8 +33,9 @@ class SudokuSolver {
 
   checkColPlacement(puzzleString, column, value) {
     let arrCols = ["", "", "", "", "", "", "", "", ""];
-    // puzzleString = puzzleString.join("");
-    console.log("puzzleString in colPlacenent", puzzleString);
+    // let puzzleString1 = puzzleString.map((el) => el.join(""));
+    puzzleString = puzzleString.map((el) => el.join("")).reduce((acc, curr) => acc + curr, "");
+    // console.log("puzzleString in colPlacenent", puzzleString, typeof puzzleString);
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
         arrCols[i] += puzzleString[(j * 9 + i)];
@@ -42,7 +43,7 @@ class SudokuSolver {
       arrCols[i] = arrCols[i].split("")
     }
     // console.log("cols", arrCols);
-    if (puzzleString[column].includes(value.toString())) {
+    if (arrCols[column].includes(value.toString())) {
       console.log(value, "is in column", column)
       return false;
     }
@@ -52,8 +53,11 @@ class SudokuSolver {
 
   checkRegionPlacement(puzzleString, row, column, value) {
     let arrRegions = ["", "", "", "", "", "", "", "", ""];
-    // puzzleString = puzzleString.join("");
-    console.log("puzzleString in regionPlacenent", puzzleString);
+    // let puzzleString1 = puzzleString.map((el) => el.join(""));
+    puzzleString = puzzleString.map((el) => el.join("")).reduce((acc, curr) => acc + curr, "");
+    // let cCat = puzzleString.reduce((acc, curr) => acc + curr, "")
+    // console.log("puzzleString in regionPlacenent", puzzleString);
+    // console.log("cCat in regionPlacenent", cCat);
     let offset = 0;
     for (let i = 0; i < 9; i++) {
       if (i > 2 && i < 6) {
@@ -88,7 +92,7 @@ class SudokuSolver {
     } else if (row > 5 && column > 5) {
       index = 8;
     }
-    if (puzzleString[index].includes(value.toString())) {
+    if (arrRegions[index].includes(value.toString())) {
       console.log(value, "is in region ", index)
       return false;
     }
@@ -158,7 +162,7 @@ class SudokuSolver {
       for (let column = 0; column < 9; column++) {
         if (solution[row][column] == ".") {
         }
-        this.checkCanPlace(solution, row, column, 1);
+        this.checkCanPlace(solution, row, column, 6);
       }
     }
 
