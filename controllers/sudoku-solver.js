@@ -24,18 +24,16 @@ class SudokuSolver {
   }
   checkRowPlacement(puzzleString, row, value) {
     if (puzzleString[row].includes(value.toString())) {
-      console.log(value, "is in row ", row)
+      console.log(value, "is in row ", row + 1)
       return false;
     }
-    console.log(value, "is NOT in row ", row)
+    console.log(value, "is NOT in row ", row + 1)
     return true
   }
 
   checkColPlacement(puzzleString, column, value) {
     let arrCols = ["", "", "", "", "", "", "", "", ""];
-    // let puzzleString1 = puzzleString.map((el) => el.join(""));
     puzzleString = puzzleString.map((el) => el.join("")).reduce((acc, curr) => acc + curr, "");
-    // console.log("puzzleString in colPlacenent", puzzleString, typeof puzzleString);
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
         arrCols[i] += puzzleString[(j * 9 + i)];
@@ -44,20 +42,17 @@ class SudokuSolver {
     }
     // console.log("cols", arrCols);
     if (arrCols[column].includes(value.toString())) {
-      console.log(value, "is in column", column)
+      console.log(value, "is in column", column + 1)
       return false;
     }
-    console.log(value, "is NOT in column", column)
+    console.log(value, "is NOT in column", column + 1)
     return true
   }
 
   checkRegionPlacement(puzzleString, row, column, value) {
     let arrRegions = ["", "", "", "", "", "", "", "", ""];
-    // let puzzleString1 = puzzleString.map((el) => el.join(""));
     puzzleString = puzzleString.map((el) => el.join("")).reduce((acc, curr) => acc + curr, "");
-    // let cCat = puzzleString.reduce((acc, curr) => acc + curr, "")
-    // console.log("puzzleString in regionPlacenent", puzzleString);
-    // console.log("cCat in regionPlacenent", cCat);
+
     let offset = 0;
     for (let i = 0; i < 9; i++) {
       if (i > 2 && i < 6) {
@@ -93,10 +88,10 @@ class SudokuSolver {
       index = 8;
     }
     if (arrRegions[index].includes(value.toString())) {
-      console.log(value, "is in region ", index)
+      console.log(value, "is in region ", index + 1)
       return false;
     }
-    console.log(value, "is Not in region ", index)
+    console.log(value, "is Not in region ", index + 1)
     return true
   }
   checkCanPlace(solution, row, column, value) {
@@ -105,96 +100,129 @@ class SudokuSolver {
     if (this.checkRowPlacement(solution, row, value) &&
       this.checkColPlacement(solution, column, value) &&
       this.checkRegionPlacement(solution, row, column, value)) {
-      console.log(value, "can be placed at", row, column);
+      console.log(value, "can be placed at", row + 1, column + 1);
       return true;
     } else {
-      console.log(value, "cannot be placed at", row, column);
+      console.log(value, "cannot be placed at", row + 1, column + 1);
       return false;
     }
-
   }
 
   solve(puzzleString) {
     console.log("trying to solve");
     console.log(puzzleString);
     let board = [];
-    // let arrCols = ["", "", "", "", "", "", "", "", ""];
-    // let arrRegions = ["", "", "", "", "", "", "", "", ""];
-    const possibles = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+    let badPuzzle = false;
 
-    //turn string into arrays 
-    //rows
+    // create board array
     for (let i = 0; i < 9; i++) {
-      board[i] = (puzzleString.slice(0 + i * 9, 9 + i * 9)).split("")//.map((el) => [el])
+      board[i] = (puzzleString.slice(0 + i * 9, 9 + i * 9)).split("");
     }
     console.log("board", board);
 
-    // columns 
-    // for (let i = 0; i < 9; i++) {
-    //   for (let j = 0; j < 9; j++) {
-    //     arrCols[i] += puzzleString[(j * 9 + i)];
-    //   }
-    //   arrCols[i] = arrCols[i].split("")
-    // }
-    // console.log("cols", arrCols);
-
-    // regions
-    // let offset = 0;
-    // for (let i = 0; i < 9; i++) {
-    //   if (i > 2 && i < 6) {
-    //     offset = 18
-    //   }
-    //   if (i > 5) {
-    //     offset = 36
-    //   }
-    //   for (let j = 0; j < 3; j++) {
-    //     arrRegions[i] += puzzleString.slice(j * 9 + i * 3 + offset, j * 9 + i * 3 + 3 + offset);
-    //   }
-    //   arrRegions[i] = arrRegions[i].split("");
-    // }
-    // console.log("regions", arrRegions);
-
-    // cycle through boxes... start at first box
-
-    // if box = "." 
     let solution = board.slice();
-    for (let row = 0; row < 9; row++) {
-      for (let column = 0; column < 9; column++) {
-        if (solution[row][column] == ".") {
+    // recursive function
+    const placeLoop = (solution, row, column, indX, placeRecord = []) => {
+      // possible numbers which can be placed
+      const possibles = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+      // recursion safety net
+      if (indX > 8) {
+        console.log("no more possibles");
+        console.log(solution);
+        badPuzzle = true;
+        return;
+      }
+      // if square is empty
+      if (solution[row][column] == ".") {
+        // see is can be placed
+        if (this.checkCanPlace(solution, row, column, possibles[indX])) {
+          // place if can be placed
+          solution[row][column] = possibles[indX];
+          // record where placed for backpacking
+          placeRecord.push(row, column);
+          console.log("placeRecord", placeRecord.map((el) => el + 1));
+          console.log("placed ", possibles[indX], "at", row + 1, column + 1);
+          // go to next column
+          column++
+          // if no more columns
+          if (column > 8) {
+            // go to next row
+            row++;
+            column = 0;
+          }
+          // if no more rows
+          if (row > 8) {
+            console.log("puzzle solved 🥳🥳🥳");
+            return { solution: solution };
+          }
+          // else repeat from new position
+          placeLoop(solution, row, column, 0, placeRecord)
+          // if no more possible numbers to try
+        } else if (indX === 8) {
+          // go back one column
+          column--;
+          // if no more columns
+          if (column < 0) {
+            // go back one row 
+            row--;
+            column = 8;
+          }
+          // if no more rows
+          if (row < 0) {
+            console.log("puzzle cannot be solved");
+            badPuzzle = true;
+            return;
+          }
+          // get position of last number placed
+          console.log("popping ", solution[row][column], "at", row + 1, column + 1);
+          column = placeRecord.pop();
+          row = placeRecord.pop();
+          console.log("trying to undo", row + 1, column + 1);
+          // if number is a 9
+          while (solution[row][column] === "9") {
+            console.log("popping ", solution[row][column], "at", row + 1, column + 1);
+            // set to blank
+            solution[row][column] = ".";
+            // go back one more number
+            column = placeRecord.pop();
+            row = placeRecord.pop();
+          }
+          // increment possibles index so not to replace same number
+          indX = possibles.indexOf(solution[row][column]) + 1;
+          // set number to blank
+          solution[row][column] = ".";
+          // try next possible number at new position
+          placeLoop(solution, row, column, indX, placeRecord);
+        } else {
+          // have not tried all possibles numbers yet so try next
+          placeLoop(solution, row, column, indX + 1, placeRecord)
         }
-        this.checkCanPlace(solution, row, column, 6);
+      } else {
+        // the number at this position was part of original puzzle string
+        // inc column if no more columns inc you row
+        if (column++ > 8) {
+          row++;
+          column = 0;
+        }
+        // if no more rows
+        if (row > 8) {
+          console.log("puzzle solved 🥳🥳🥳");
+          return { solution: solution };
+        }
+        //  else cycle through all possible numbers at this position
+        placeLoop(solution, row, column, 0, placeRecord);
       }
     }
-
-    //   // cycle through numbers - check current number 
-    //       // place number 
-    //       /*currentBox*/arrRows[row][column] = num;
-    //       console.log("did switch", arrRows[row][column]);
-    //       // increment currentBox[row][column + 1]
-    //     }
-    //     row++
-    //   }
-    // }
-
-    // if end of col / no more boxes 
-
-    // go to next col 
-
-    // if no more cols 
-
-    // return solution
-
-    // else if number can't be placed,
-
-    // repeat with next number
-
-    // if no number can be placed in box 
-
-    // go back to previous box and try next number
-
-    // if it's the first box / no previous box exists
-
-    // puzzle can't be solved
+    // call solve recursion function
+    placeLoop(solution, 0, 0, 0);
+    console.log(typeof solution.map((el) => [el]).join(""), solution.map((el) => [el]).join("").replace(/\,/g, ""));
+    // when can't be solved
+    if (badPuzzle) {
+      return false;
+    } else {
+      // when solved
+      return solution.map((el) => [el]).join("").replace(/\,/g, "")
+    }
 
   }
 }
