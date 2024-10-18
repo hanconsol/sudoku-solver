@@ -33,8 +33,7 @@ module.exports = function (app) {
           console.log(solution);
         }
       }catch (error) {
-        // todo find way to avoid timeout when can't be solved
-        console.log({error: error.message});
+        console.log({error: error.message}, puzzle);
         res.send({ error: 'Puzzle cannot be solved' })
       }
     }

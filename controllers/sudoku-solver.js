@@ -113,6 +113,7 @@ class SudokuSolver {
     console.log(puzzleString);
     let board = [];
     let badPuzzle = false;
+    let resultInitVerify = false;
 
     // create board array
     for (let i = 0; i < 9; i++) {
@@ -120,7 +121,66 @@ class SudokuSolver {
     }
     console.log("board", board);
 
+
     let solution = board.slice();
+
+    //if board starts with double numbers in any row, column or region
+   const  verifyInitial = (solution, row, column) => {
+    // if no more rows
+      if (row > 8) {
+        console.log("puzzle passed initial scan after # ☑️");
+        resultInitVerify = false;
+        return ;
+      }
+      console.log("verify initial row ", row + 1, "column", column + 1);
+      console.log("value ", solution[row][column])
+      // if square is Not empty
+      if (solution[row][column] != ".") {
+        // see is can be placed
+        let temp = solution[row][column];
+        console.log("temp", temp);
+        solution[row][column] = ".";
+        if (this.checkCanPlace(solution, row, column, temp)) {
+          solution[row][column] = temp;
+          // if can be placed
+          // go to next column
+          column++
+          // if no more columns
+          if (column > 8) {
+            // go to next row
+            row++;
+            column = 0;
+          }
+                   // else repeat from new position
+          verifyInitial(solution, row, column)
+          // in other words, I want to see if each number can be placed where it already is
+        } else {
+          solution[row][column] = temp;
+          console.log("puzzle went bad at", row + 1, column + 1);
+          console.log(solution[row][column], "won't fit");
+          resultInitVerify = true;
+          return;
+        }
+
+      } else {
+        column++
+        // if no more columns
+        if (column > 8) {
+          // go to next row
+          row++;
+          column = 0;
+        }
+       
+        console.log("No number SKIP")
+        verifyInitial(solution, row, column);
+      }
+
+    }
+   verifyInitial(solution, 0, 0);
+   if (resultInitVerify) {
+    return false;
+   }
+  
     // recursive function
     const placeLoop = (solution, row, column, indX, placeRecord = []) => {
       // possible numbers which can be placed
@@ -215,7 +275,7 @@ class SudokuSolver {
     }
     // call solve recursion function
     placeLoop(solution, 0, 0, 0);
-    console.log(typeof solution.map((el) => [el]).join(""), solution.map((el) => [el]).join("").replace(/\,/g, ""));
+    // console.log(typeof solution.map((el) => [el]).join(""), solution.map((el) => [el]).join("").replace(/\,/g, ""));
     // when can't be solved
     if (badPuzzle) {
       return false;
