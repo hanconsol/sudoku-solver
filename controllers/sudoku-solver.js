@@ -55,30 +55,30 @@ class SudokuSolver {
     column = (parseInt(columnIn[0]) - 1);
     console.log("row", rowLetter[0], "to ", row, "column", column);
 
-    return { row: row, column: column }
+    return { row: row, column: column };
   }
 
   validate(puzzleString, coordinate, value, type) {
     const charRegx = /^[\.*1-9*\.*]+$/g;
     const numCharRegx = /^.{81}$/g;
-     if ((!puzzleString || puzzleString === " " || !coordinate || coordinate === " " || !value || value === " ") && type === "solve") {
-          return { error: 'Required field missing' };
-        }
+    if ((!puzzleString || puzzleString === " " || !coordinate || coordinate === " " || !value || value === " ") && type === "solve") {
+      return { error: 'Required field missing' };
+    }
     if ((!puzzleString || puzzleString === " " || !coordinate || coordinate === " " || !value || value === " ") && type === "check") {
       return { error: 'Required field(s) missing' };
     }
     if (!charRegx.test(puzzleString)) {
-      return { error: 'Invalid characters in puzzle' }
+      return { error: 'Invalid characters in puzzle' };
     }
     if (!numCharRegx.test(puzzleString)) {
-      return { error: 'Expected puzzle to be 81 characters long' }
+      return { error: 'Expected puzzle to be 81 characters long' };
     }
     return "valid"
   }
   getBoard(puzzleString) {
     let arrRows = [];
     for (let i = 0; i < 9; i++) {
-      arrRows[i] = (puzzleString.slice(0 + i * 9, 9 + i * 9)).split("")//.map((el) => [el])
+      arrRows[i] = (puzzleString.slice(0 + i * 9, 9 + i * 9)).split("");
     }
     // console.log("rows", arrRows);
   }
@@ -88,7 +88,7 @@ class SudokuSolver {
       return false;
     }
     console.log(value, "is NOT in row ", row + 1)
-    return true
+    return true;
   }
 
   checkColPlacement(puzzleString, column, value) {
@@ -98,7 +98,7 @@ class SudokuSolver {
       for (let j = 0; j < 9; j++) {
         arrCols[i] += puzzleString[(j * 9 + i)];
       }
-      arrCols[i] = arrCols[i].split("")
+      arrCols[i] = arrCols[i].split("");
     }
     // console.log("cols", arrCols);
     if (arrCols[column].includes(value.toString())) {
@@ -106,7 +106,7 @@ class SudokuSolver {
       return false;
     }
     console.log(value, "is NOT in column", column + 1)
-    return true
+    return true;
   }
 
   checkRegionPlacement(puzzleString, row, column, value) {
@@ -116,10 +116,10 @@ class SudokuSolver {
     let offset = 0;
     for (let i = 0; i < 9; i++) {
       if (i > 2 && i < 6) {
-        offset = 18
+        offset = 18;
       }
       if (i > 5) {
-        offset = 36
+        offset = 36;
       }
       for (let j = 0; j < 3; j++) {
         arrRegions[i] += puzzleString.slice(j * 9 + i * 3 + offset, j * 9 + i * 3 + 3 + offset);
@@ -152,7 +152,7 @@ class SudokuSolver {
       return false;
     }
     console.log(value, "is Not in region ", index + 1)
-    return true
+    return true;
   }
   checkCanPlace(solution, row, column, value) {
 
@@ -173,21 +173,21 @@ class SudokuSolver {
     let conflict = "";
 
     if (!this.checkRowPlacement(solution, row, value)) {
-      conflict += "row "
+      conflict += "row ";
     }
     if (!this.checkColPlacement(solution, column, value)) {
-      conflict += "column "
+      conflict += "column ";
     }
     if (!this.checkRegionPlacement(solution, row, column, value)) {
       conflict += "region";
     }
     if (!conflict) {
-      return {valid: true}
-    }else {
-      return {valid: false, conflict: conflict}
+      return { valid: true };
+    } else {
+      return { valid: false, conflict: conflict };
     };
 
-    
+
   }
   solve(puzzleString) {
     console.log("trying to solve");
