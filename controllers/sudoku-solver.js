@@ -1,11 +1,71 @@
 class SudokuSolver {
+  createBoard(puzzleString) {
+    // create board array
+    let board = [];
+    for (let i = 0; i < 9; i++) {
+      board[i] = (puzzleString.slice(0 + i * 9, 9 + i * 9)).split("");
+    }
+    return board;
+  }
+  convertCoordinate(coordinate) {
+    const rowdRegX = /^([a-i])/i;
+    const colRegX = /([1-9])$/;
+    let row = 0;
+    let column = 0;
+    const rowLetter = coordinate.match(rowdRegX);
+    const columnIn = coordinate.match(colRegX);
+    switch (rowLetter[0]) {
+      case "a":
+      case "A":
+        row = 0;
+        break;
+      case "b":
+      case "B":
+        row = 1;
+        break;
+      case "c":
+      case "C":
+        row = 2;
+        break;
+      case "d":
+      case "D":
+        row = 3;
+        break;
+      case "e":
+      case "E":
+        row = 4;
+        break;
+      case "f":
+      case "F":
+        row = 5;
+        break;
+      case "g":
+      case "G":
+        row = 6;
+        break;
+      case "h":
+      case "H":
+        row = 7;
+        break;
+      case "i":
+      case "I":
+        row = 8;
+        break;
+    }
+    column = (parseInt(columnIn[0]) - 1);
+    console.log("row", rowLetter[0], "to ", row, "column", column);
 
+    return { row: row, column: column }
+  }
 
-  validate(puzzleString) {
+  validate(puzzleString, coordinate, value, type) {
     const charRegx = /^[\.*1-9*\.*]+$/g;
     const numCharRegx = /^.{81}$/g;
-    if (!puzzleString || puzzleString === " ") {
-      return { error: 'Required field missing' };
+     if ((!puzzleString || puzzleString === " " || !coordinate || coordinate === " " || !value || value === " ") && type === "solve") {
+          return { error: 'Required field missing' };
+        }
+    if ((!puzzleString || puzzleString === " " || !coordinate || coordinate === " " || !value || value === " ") && type === "check") {
+      return { error: 'Required field(s) missing' };
     }
     if (!charRegx.test(puzzleString)) {
       return { error: 'Invalid characters in puzzle' }
@@ -105,32 +165,50 @@ class SudokuSolver {
     } else {
       console.log(value, "cannot be placed at", row + 1, column + 1);
       return false;
+
     }
   }
+  checkCanPlaceOne(solution, row, column, value) {
+    let valid = false;
+    let conflict = "";
 
+    if (!this.checkRowPlacement(solution, row, value)) {
+      conflict += "row "
+    }
+    if (!this.checkColPlacement(solution, column, value)) {
+      conflict += "column "
+    }
+    if (!this.checkRegionPlacement(solution, row, column, value)) {
+      conflict += "region";
+    }
+    if (!conflict) {
+      return {valid: true}
+    }else {
+      return {valid: false, conflict: conflict}
+    };
+
+    
+  }
   solve(puzzleString) {
     console.log("trying to solve");
     console.log(puzzleString);
-    let board = [];
     let badPuzzle = false;
     let resultInitVerify = false;
 
     // create board array
-    for (let i = 0; i < 9; i++) {
-      board[i] = (puzzleString.slice(0 + i * 9, 9 + i * 9)).split("");
-    }
+    let board = this.createBoard(puzzleString);
     console.log("board", board);
 
 
     let solution = board.slice();
 
     //if board starts with double numbers in any row, column or region
-   const  verifyInitial = (solution, row, column) => {
-    // if no more rows
+    const verifyInitial = (solution, row, column) => {
+      // if no more rows
       if (row > 8) {
         console.log("puzzle passed initial scan after # ☑️");
         resultInitVerify = false;
-        return ;
+        return;
       }
       console.log("verify initial row ", row + 1, "column", column + 1);
       console.log("value ", solution[row][column])
@@ -151,7 +229,7 @@ class SudokuSolver {
             row++;
             column = 0;
           }
-                   // else repeat from new position
+          // else repeat from new position
           verifyInitial(solution, row, column)
           // in other words, I want to see if each number can be placed where it already is
         } else {
@@ -170,17 +248,17 @@ class SudokuSolver {
           row++;
           column = 0;
         }
-       
+
         console.log("No number SKIP")
         verifyInitial(solution, row, column);
       }
 
     }
-   verifyInitial(solution, 0, 0);
-   if (resultInitVerify) {
-    return false;
-   }
-  
+    verifyInitial(solution, 0, 0);
+    if (resultInitVerify) {
+      return false;
+    }
+
     // recursive function
     const placeLoop = (solution, row, column, indX, placeRecord = []) => {
       // possible numbers which can be placed
