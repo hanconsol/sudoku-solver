@@ -14,11 +14,6 @@ const badPuzzle2 =     '..839.7.575.....964..1.......16.29846.9.312.7..754.....6
 const goodPuzzle3 =     '5..91372.3...8.5.9.9.25..8.68.47.23...95..46.7.4.....5.2.......4..8916..85.72...3';
 const goodPuzzle3Answer =     '568913724342687519197254386685479231219538467734162895926345178473891652851726943';
 
-
-
-
-
-
 suite('Unit Tests', () => {
     test('Logic handles a valid puzzle string of 81 characters', () => {
         assert.equal(solver.validate(puzzle81, "a1", "1", "solve"), "valid")
