@@ -40,6 +40,7 @@ module.exports = function (app) {
       let board = solver.createBoard(puzzle);
       if (board[row][column] === value) {
         res.send({ valid: true });
+        return;
       }
       let checkOne = solver.checkCanPlaceOne(board, row, column, value);
       res.send(checkOne);

@@ -75,15 +75,15 @@ class SudokuSolver {
     }
     return "valid"
   }
-  getBoard(puzzleString) {
-    let arrRows = [];
-    for (let i = 0; i < 9; i++) {
-      arrRows[i] = (puzzleString.slice(0 + i * 9, 9 + i * 9)).split("");
-    }
-    // console.log("rows", arrRows);
-  }
+  // getBoard(puzzleString) {
+  //   let arrRows = [];
+  //   for (let i = 0; i < 9; i++) {
+  //     arrRows[i] = (puzzleString.slice(0 + i * 9, 9 + i * 9)).split("");
+  //   }
+  //   // console.log("rows", arrRows);
+  // }
   checkRowPlacement(puzzleString, row, value) {
-    if (puzzleString[row].includes(value.toString())) {
+    if (puzzleString[row].includes(value)) {
       console.log(value, "is in row ", row + 1)
       return false;
     }
@@ -101,7 +101,7 @@ class SudokuSolver {
       arrCols[i] = arrCols[i].split("");
     }
     // console.log("cols", arrCols);
-    if (arrCols[column].includes(value.toString())) {
+    if (arrCols[column].includes(value)) {
       console.log(value, "is in column", column + 1)
       return false;
     }
@@ -147,7 +147,7 @@ class SudokuSolver {
     } else if (row > 5 && column > 5) {
       index = 8;
     }
-    if (arrRegions[index].includes(value.toString())) {
+    if (arrRegions[index].includes(value)) {
       console.log(value, "is in region ", index + 1)
       return false;
     }
