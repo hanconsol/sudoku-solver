@@ -75,15 +75,9 @@ class SudokuSolver {
     }
     return "valid"
   }
-  // getBoard(puzzleString) {
-  //   let arrRows = [];
-  //   for (let i = 0; i < 9; i++) {
-  //     arrRows[i] = (puzzleString.slice(0 + i * 9, 9 + i * 9)).split("");
-  //   }
-  //   // console.log("rows", arrRows);
-  // }
-  checkRowPlacement(puzzleString, row, value) {
-    if (puzzleString[row].includes(value)) {
+
+  checkRowPlacement(board, row, value) {
+    if (board[row].includes(value)) {
       console.log(value, "is in row ", row + 1)
       return false;
     }
@@ -91,9 +85,9 @@ class SudokuSolver {
     return true;
   }
 
-  checkColPlacement(puzzleString, column, value) {
+  checkColPlacement(board, column, value) {
     let arrCols = ["", "", "", "", "", "", "", "", ""];
-    puzzleString = puzzleString.map((el) => el.join("")).reduce((acc, curr) => acc + curr, "");
+    let puzzleString = board.map((el) => el.join("")).reduce((acc, curr) => acc + curr, "");
     for (let i = 0; i < 9; i++) {
       for (let j = 0; j < 9; j++) {
         arrCols[i] += puzzleString[(j * 9 + i)];
@@ -109,9 +103,9 @@ class SudokuSolver {
     return true;
   }
 
-  checkRegionPlacement(puzzleString, row, column, value) {
+  checkRegionPlacement(board, row, column, value) {
     let arrRegions = ["", "", "", "", "", "", "", "", ""];
-    puzzleString = puzzleString.map((el) => el.join("")).reduce((acc, curr) => acc + curr, "");
+    let puzzleString = board.map((el) => el.join("")).reduce((acc, curr) => acc + curr, "");
 
     let offset = 0;
     for (let i = 0; i < 9; i++) {
